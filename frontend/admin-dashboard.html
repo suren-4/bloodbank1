@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Blood Bank Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 72px);
+        }
+        
+        /* Admin dashboard animation delays */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Admin dashboard animation delays */
+        .admin-header { animation-delay: 0.2s; }
+        .stats-grid { animation-delay: 0.4s; }
+        .chart-card { animation-delay: 0.6s; }
+        .data-section:nth-child(1) { animation-delay: 0.8s; }
+        .data-section:nth-child(2) { animation-delay: 1.0s; }
+        .data-section:nth-child(3) { animation-delay: 1.2s; }
+        .data-section:nth-child(4) { animation-delay: 1.4s; }
+        
+        .admin-sidebar {
+            background: #333;
+            color: white;
+            padding: 2rem 0;
+        }
+        
+        .admin-sidebar .admin-profile {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .admin-sidebar .admin-profile .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #c62828;
+            color: white;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .admin-sidebar .admin-profile h3 {
+            margin: 0.5rem 0;
+            font-weight: 500;
+        }
+        
+        .admin-sidebar .admin-profile p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .admin-sidebar .admin-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .admin-sidebar .admin-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .admin-sidebar .admin-menu li a:hover,
+        .admin-sidebar .admin-menu li a.active {
+            background: rgba(198, 40, 40, 0.2);
+            color: white;
+        }
+        
+        .admin-sidebar .admin-menu li a i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .admin-sidebar .admin-menu .logout {
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+        }
+        
+        .admin-sidebar .admin-menu .logout a {
+            color: #ff9e9e;
+        }
+        
+        .admin-sidebar .admin-menu .logout a:hover {
+            background: rgba(255, 0, 0, 0.1);
+        }
+        
+        .admin-content {
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        
+        .admin-content .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-content .admin-header h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        .admin-content .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-content .stats-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-content .stats-card .stats-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .admin-content .stats-card.donors .stats-icon {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+        
+        .admin-content .stats-card.blood .stats-icon {
+            background: rgba(198, 40, 40, 0.1);
+            color: #c62828;
+        }
+        
+        .admin-content .stats-card.requests .stats-icon {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+        
+        .admin-content .stats-card.camps .stats-icon {
+            background: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+        
+        .admin-content .stats-card h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-content .stats-card .stats-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-content .stats-card .stats-change {
+            font-size: 0.8rem;
+        }
+        
+        .admin-content .stats-card .stats-change.positive {
+            color: #4CAF50;
+        }
+        
+        .admin-content .stats-card .stats-change.negative {
+            color: #F44336;
+        }
+        
+        .admin-content .data-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .admin-content .data-section .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-content .data-section .section-header h2 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+        
+        /* Form styles for admin */
+        .form-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        
+        .btn-icon.edit:hover {
+            color: #2196F3;
+        }
+        
+        .btn-icon.delete:hover {
+            color: #F44336;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-approve {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-reject {
+            background-color: #F44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-approve:hover {
+            background-color: #388E3C;
+        }
+        
+        .btn-reject:hover {
+            background-color: #D32F2F;
+        }
+        
+        .admin-content .data-section .section-header .view-all {
+            color: #c62828;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .admin-content .data-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .admin-content .data-section table th {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .admin-content .data-section table td {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .admin-content .data-section table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .admin-content .data-section table tbody tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .admin-content .data-section .empty-message {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .admin-content .chart-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-content .chart-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .admin-content .chart-card h2 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .admin-content .chart-card h2 i {
+            color: #c62828;
+        }
+        
+        .admin-content .blood-inventory-chart {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+        
+        .admin-content .blood-type-card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            padding: 1rem;
+        }
+        
+        .admin-content .blood-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .admin-content .blood-type-card.low {
+            border-left-color: #f44336;
+        }
+        
+        .admin-content .blood-type-card.medium {
+            border-left-color: #ff9800;
+        }
+        
+        .admin-content .blood-type-card.high {
+            border-left-color: #4caf50;
+        }
+        
+        .admin-content .blood-type-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .admin-content .blood-type-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .admin-content .blood-type-badge.a-pos { background-color: #e53935; }
+        .admin-content .blood-type-badge.a-neg { background-color: #ef5350; }
+        .admin-content .blood-type-badge.b-pos { background-color: #1e88e5; }
+        .admin-content .blood-type-badge.b-neg { background-color: #42a5f5; }
+        .admin-content .blood-type-badge.ab-pos { background-color: #8e24aa; }
+        .admin-content .blood-type-badge.ab-neg { background-color: #ab47bc; }
+        .admin-content .blood-type-badge.o-pos { background-color: #43a047; }
+        .admin-content .blood-type-badge.o-neg { background-color: #66bb6a; }
+        
+        .admin-content .blood-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .admin-content .blood-progress {
+            margin: 0.75rem 0;
+        }
+        
+        .admin-content .blood-progress-bar {
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .admin-content .blood-progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease-out;
+        }
+        
+        .admin-content .blood-progress-fill.low {
+            background: #f44336;
+        }
+        
+        .admin-content .blood-progress-fill.medium {
+            background: #ff9800;
+        }
+        
+        .admin-content .blood-progress-fill.high {
+            background: #4caf50;
+        }
+        
+        .admin-content .blood-progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        .admin-content .blood-status {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .admin-content .blood-status.low {
+            color: #f44336;
+        }
+        
+        .admin-content .blood-status.medium {
+            color: #ff9800;
+        }
+        
+        .admin-content .blood-status.high {
+            color: #4caf50;
+        }
+        
+        .admin-content .blood-action {
+            margin-top: 0.75rem;
+        }
+        
+        .admin-content .blood-action button {
+            width: 100%;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 4px;
+            background: #f5f5f5;
+            color: #666;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .admin-content .blood-action button:hover {
+            background: #e0e0e0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .badge.completed {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+        
+        .badge.processing {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+        
+        .badge.urgent {
+            background: rgba(244, 67, 54, 0.1);
+            color: #F44336;
+        }
+
+        /* Auth check */
+        .auth-check {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+        }
+
+        .auth-check i {
+            font-size: 3rem;
+            color: #c62828;
+            margin-bottom: 1rem;
+        }
+
+        .auth-check p {
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-check .btn {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth check overlay (hidden by default) -->
+    <div id="authCheck" class="auth-check" style="display: none;">
+        <i class="fas fa-lock"></i>
+        <h2>Access Denied</h2>
+        <p>You need to log in to access the admin dashboard</p>
+        <a href="admin-login.html" class="btn">Go to Login</a>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            Blood Bank Management
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="donors.html">Donors</a></li>
+            <li><a href="inventory.html">Inventory</a></li>
+            <li><a href="requests.html">Blood Requests</a></li>
+            <li><a href="camps.html">Donation Camps</a></li>
+            <li><a href="admin-login.html" class="admin-login-btn"><i class="fas fa-user-shield"></i> Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="admin-dashboard">
+        <div class="admin-sidebar">
+            <div class="admin-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>Admin User</h3>
+                <p>System Administrator</p>
+            </div>
+            <ul class="admin-menu">
+                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#"><i class="fas fa-users"></i> Donors</a></li>
+                <li><a href="#"><i class="fas fa-tint"></i> Blood Inventory</a></li>
+                <li><a href="#"><i class="fas fa-clipboard-list"></i> Blood Requests</a></li>
+                <li><a href="#"><i class="fas fa-calendar-alt"></i> Donation Camps</a></li>
+                <li><a href="#"><i class="fas fa-hospital"></i> Hospitals</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                <li class="logout"><a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+        <div class="admin-content">
+            <div class="admin-header">
+                <h1>Admin Dashboard</h1>
+                <div class="date">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDate">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stats-card donors">
+                    <div class="stats-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Total Donors</h3>
+                    <div class="stats-value" id="totalDonors">0</div>
+                    <div class="stats-change positive" id="donorsChange">...</div>
+                </div>
+                <div class="stats-card blood">
+                    <div class="stats-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h3>Blood Units</h3>
+                    <div class="stats-value" id="bloodUnits">0</div>
+                    <div class="stats-change positive" id="unitsChange">...</div>
+                </div>
+                <div class="stats-card requests">
+                    <div class="stats-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>Blood Requests</h3>
+                    <div class="stats-value" id="bloodRequests">0</div>
+                    <div class="stats-change" id="requestsChange">...</div>
+                </div>
+                <div class="stats-card camps">
+                    <div class="stats-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Donation Camps</h3>
+                    <div class="stats-value" id="donationCamps">0</div>
+                    <div class="stats-change" id="campsChange">...</div>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <div class="chart-card">
+                    <h2><i class="fas fa-tint"></i> Blood Inventory</h2>
+                    <div class="blood-inventory-chart" id="bloodInventoryChart">
+                        <!-- A+ Blood Type Card -->
+                        <div class="blood-type-card" id="aposCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge a-pos">A+</div>
+                                <div class="blood-amount" id="aposAmount">0</div>
+                        </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="aposFill" style="width: 0%;"></div>
+                        </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                        </div>
+                        </div>
+                            <div class="blood-status" id="aposStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                        </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                        </div>
+                        </div>
+
+                        <!-- A- Blood Type Card -->
+                        <div class="blood-type-card" id="anegCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge a-neg">A-</div>
+                                <div class="blood-amount" id="anegAmount">0</div>
+                        </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="anegFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                                </div>
+                            </div>
+                            <div class="blood-status" id="anegStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                            </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- B+ Blood Type Card -->
+                        <div class="blood-type-card" id="bposCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge b-pos">B+</div>
+                                <div class="blood-amount" id="bposAmount">0</div>
+                            </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="bposFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                                </div>
+                            </div>
+                            <div class="blood-status" id="bposStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                            </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- B- Blood Type Card -->
+                        <div class="blood-type-card" id="bnegCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge b-neg">B-</div>
+                                <div class="blood-amount" id="bnegAmount">0</div>
+                            </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="bnegFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                                </div>
+                            </div>
+                            <div class="blood-status" id="bnegStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                            </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AB+ Blood Type Card -->
+                        <div class="blood-type-card" id="abposCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge ab-pos">AB+</div>
+                                <div class="blood-amount" id="abposAmount">0</div>
+                            </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="abposFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                                </div>
+                            </div>
+                            <div class="blood-status" id="abposStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                            </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AB- Blood Type Card -->
+                        <div class="blood-type-card" id="abnegCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge ab-neg">AB-</div>
+                                <div class="blood-amount" id="abnegAmount">0</div>
+                            </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="abnegFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                                </div>
+                            </div>
+                            <div class="blood-status" id="abnegStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                            </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- O+ Blood Type Card -->
+                        <div class="blood-type-card" id="oposCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge o-pos">O+</div>
+                                <div class="blood-amount" id="oposAmount">0</div>
+                            </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="oposFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                                </div>
+                            </div>
+                            <div class="blood-status" id="oposStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                            </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- O- Blood Type Card -->
+                        <div class="blood-type-card" id="onegCard">
+                            <div class="blood-type-header">
+                                <div class="blood-type-badge o-neg">O-</div>
+                                <div class="blood-amount" id="onegAmount">0</div>
+                            </div>
+                            <div class="blood-progress">
+                                <div class="blood-progress-bar">
+                                    <div class="blood-progress-fill" id="onegFill" style="width: 0%;"></div>
+                                </div>
+                                <div class="blood-progress-labels">
+                                    <span>0</span>
+                                    <span>30+</span>
+                                </div>
+                            </div>
+                            <div class="blood-status" id="onegStatus">
+                                <i class="fas fa-exclamation-circle"></i> Critical Shortage
+                            </div>
+                            <div class="blood-action">
+                                <button>
+                                    <i class="fas fa-sync-alt"></i> Request Donation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>Pending Blood Requests</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Patient</th>
+                            <th>Blood Type</th>
+                            <th>Units</th>
+                            <th>Hospital</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingRequestsTable">
+                        <!-- Pending requests will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>All Blood Requests</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Patient</th>
+                            <th>Blood Type</th>
+                            <th>Units</th>
+                            <th>Hospital</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentRequestsTable">
+                        <!-- All requests will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>Recent Donors</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Donor ID</th>
+                            <th>Name</th>
+                            <th>Blood Type</th>
+                            <th>Contact</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentDonorsTable">
+                        <!-- Donors will be loaded dynamically from the database -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="data-section">
+                <div class="section-header">
+                    <h2>Managing Donation Camps</h2>
+                    <button id="showCampFormBtn" class="btn primary">
+                        <i class="fas fa-plus"></i> Add New Camp
+                    </button>
+                </div>
+                
+                <div id="campFormContainer" style="display: none; margin-bottom: 2rem;">
+                    <form id="campForm" class="form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="campLocation">Location:</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <input type="text" id="campLocation" placeholder="Enter camp location" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="campDate">Date:</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-calendar"></i>
+                                    <input type="date" id="campDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="campTime">Time:</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-clock"></i>
+                                    <input type="time" id="campTime" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="campCapacity">Expected Donors:</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-users"></i>
+                                    <input type="number" id="campCapacity" min="1" value="50" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="campDescription">Description:</label>
+                            <textarea id="campDescription" rows="3" placeholder="Enter camp details and information" required></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" id="cancelCampBtn" class="btn secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </button>
+                            <button type="submit" class="btn primary">
+                                <i class="fas fa-save"></i> Register Camp
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Camp ID</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Expected Donors</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="campsTable">
+                        <!-- Camps will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dashboardContent = document.querySelector('.admin-content');
+        
+        // Check if user is logged in
+            const isAdminLoggedIn = localStorage.getItem('isAdminLoggedIn');
+            
+            // Show auth check overlay if not logged in
+            if (!isAdminLoggedIn || isAdminLoggedIn !== 'true') {
+                document.getElementById('authCheck').style.display = 'flex';
+                return;
+            }
+            
+            // Show dashboard content with transition
+            if (dashboardContent) {
+                dashboardContent.style.opacity = '1';
+                dashboardContent.style.transition = 'opacity 0.5s ease';
+            }
+            
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Logout handler
+            document.getElementById('logoutButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('isAdminLoggedIn');
+                window.location.href = 'admin-login.html';
+            });
+
+            // Initialize dashboard data
+            initializeDashboard();
+        });
+
+        // Camp form toggle functions
+        function setupCampFormHandlers() {
+            const showCampFormBtn = document.getElementById('showCampFormBtn');
+            const cancelCampBtn = document.getElementById('cancelCampBtn');
+            const campFormContainer = document.getElementById('campFormContainer');
+            const campForm = document.getElementById('campForm');
+            
+            // Show form
+            showCampFormBtn.addEventListener('click', function() {
+                campFormContainer.style.display = 'block';
+                showCampFormBtn.style.display = 'none';
+            });
+            
+            // Hide form
+            cancelCampBtn.addEventListener('click', function() {
+                campFormContainer.style.display = 'none';
+                showCampFormBtn.style.display = 'inline-block';
+                campForm.reset();
+            });
+            
+            // Handle form submission
+            campForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const submitBtn = e.target.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+                
+                const location = document.getElementById('campLocation').value;
+                const date = document.getElementById('campDate').value;
+                const time = document.getElementById('campTime').value;
+                const capacity = document.getElementById('campCapacity').value;
+                const description = document.getElementById('campDescription').value;
+                
+                fetch(`${API_BASE_URL}/camps`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        location,
+                        date,
+                        time,
+                        capacity,
+                        description
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        showNotification(data.error, 'error');
+                        return;
+                    }
+                    
+                    showNotification('Donation camp registered successfully!');
+                    campForm.reset();
+                    campFormContainer.style.display = 'none';
+                    showCampFormBtn.style.display = 'inline-block';
+                    
+                    // Reload camps list
+                    loadCamps();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error registering camp. Please try again.', 'error');
+                })
+                .finally(() => {
+                    // Re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                });
+            });
+        }
+        
+        // Initialize all dashboard data
+        async function initializeDashboard() {
+            try {
+                // Fetch all data in parallel for better performance
+                await Promise.all([
+                    fetchDashboardStats(),
+                    loadBloodInventory(),
+                    loadRecentDonors(),
+                    window.loadPendingBloodRequests(),
+                    window.loadAllBloodRequests(),
+                    window.loadCamps()
+                ]);
+
+                // Set up camp form handlers
+                setupCampFormHandlers();
+            } catch (error) {
+                console.error('Error initializing dashboard:', error);
+                showNotification('Error loading dashboard data', 'error');
+            }
+        }
+
+        // Fetch dashboard statistics from API
+        async function fetchDashboardStats() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/stats`);
+                if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+                
+                const stats = await response.json();
+                
+                // Update statistics with data from the database
+                document.getElementById('totalDonors').textContent = stats['total donors'] ?? 0;
+                document.getElementById('bloodUnits').textContent = stats['available units'] ?? 0;
+                document.getElementById('bloodRequests').textContent = stats['pending requests'] ?? 0;
+                document.getElementById('donationCamps').textContent = stats['upcoming camps'] ?? 0;
+                
+                // Update change indicators (you can enhance this with monthly change data if available)
+                document.getElementById('donorsChange').textContent = 'From database';
+                document.getElementById('unitsChange').textContent = 'From database';
+                document.getElementById('requestsChange').textContent = `${stats['pending requests'] ?? 0} pending`;
+                document.getElementById('campsChange').textContent = 'Upcoming';
+            } catch (error) {
+                console.error('Error fetching dashboard stats:', error);
+                // Reset to zeros in case of error
+                document.getElementById('totalDonors').textContent = '0';
+                document.getElementById('bloodUnits').textContent = '0';
+                document.getElementById('bloodRequests').textContent = '0';
+                document.getElementById('donationCamps').textContent = '0';
+                
+                document.getElementById('donorsChange').textContent = 'Data unavailable';
+                document.getElementById('unitsChange').textContent = 'Data unavailable';
+                document.getElementById('requestsChange').textContent = 'Data unavailable';
+                document.getElementById('campsChange').textContent = 'Data unavailable';
+            }
+        }
+        
+        // Fetch and display blood inventory
+        async function loadBloodInventory() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/inventory`);
+                if (!response.ok) throw new Error('Failed to fetch blood inventory');
+                const inventory = await response.json();
+                
+                // Blood type mappings
+                const bloodTypeMap = {
+                    'A+': { id: 'apos', classPrefix: 'a-pos' },
+                    'A-': { id: 'aneg', classPrefix: 'a-neg' },
+                    'B+': { id: 'bpos', classPrefix: 'b-pos' },
+                    'B-': { id: 'bneg', classPrefix: 'b-neg' },
+                    'AB+': { id: 'abpos', classPrefix: 'ab-pos' },
+                    'AB-': { id: 'abneg', classPrefix: 'ab-neg' },
+                    'O+': { id: 'opos', classPrefix: 'o-pos' },
+                    'O-': { id: 'oneg', classPrefix: 'o-neg' }
+                };
+                
+                console.log('Inventory data from database:', inventory);
+                
+                // Update each blood type card
+                inventory.forEach(item => {
+                    const typeInfo = bloodTypeMap[item.Blood_Type];
+                    if (!typeInfo) return;
+                    
+                    const amount = item.Quantity || 0;
+                    const card = document.getElementById(`${typeInfo.id}Card`);
+                    
+                    if (!card) return;
+                    
+                    // Update amount
+                    document.getElementById(`${typeInfo.id}Amount`).textContent = amount;
+                    
+                    // Calculate fill percentage (max at 30 units)
+                    const fillPercent = Math.min(Math.round((amount / 30) * 100), 100);
+                    const progressBar = card.querySelector('.progress-fill');
+                    if (progressBar) {
+                        progressBar.style.width = `${fillPercent}%`;
+                    }
+                    
+                    // Update status based on amount
+                    const statusElement = card.querySelector('.status-badge');
+                    let status, statusClass;
+                    
+                    if (amount <= 5) {
+                        status = 'Critical Shortage';
+                        statusClass = 'critical';
+                        card.classList.add('critical-border');
+                    } else if (amount <= 10) {
+                        status = 'Low Stock';
+                        statusClass = 'low';
+                        card.classList.add('low-border');
+                        card.classList.remove('critical-border');
+                    } else {
+                        status = 'Sufficient';
+                        statusClass = 'good';
+                        card.classList.remove('critical-border', 'low-border');
+                    }
+                    
+                    // Update status text and class
+                    if (statusElement) {
+                        statusElement.textContent = status;
+                        statusElement.className = `status-badge ${statusClass}`;
+                    }
+                });
+                
+                // Update inventory table
+                const tbody = document.querySelector('#bloodInventoryTable tbody');
+                if (tbody) {
+                    tbody.innerHTML = inventory.map(item => {
+                        // Determine status text and class
+                        let statusText, statusClass;
+                        const amount = item.Quantity || 0;
+                        
+                        if (amount <= 5) {
+                            statusText = 'Critical Shortage';
+                            statusClass = 'critical';
+                        } else if (amount <= 10) {
+                            statusText = 'Low Stock';
+                            statusClass = 'low';
+                        } else {
+                            statusText = 'Sufficient';
+                            statusClass = 'good';
+                        }
+                        
+                        return `
+                            <tr>
+                                <td>${item.Blood_Type}</td>
+                                <td>${amount} units</td>
+                                <td><span class="badge ${statusClass}">${statusText}</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (error) {
+                console.error('Error loading blood inventory:', error);
+                
+                // Use default values for blood inventory display in case of error
+                const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+                const tbody = document.querySelector('#bloodInventoryTable tbody');
+                
+                if (tbody) {
+                    tbody.innerHTML = bloodTypes.map(type => {
+                        return `
+                            <tr>
+                                <td>${type}</td>
+                                <td>0 units</td>
+                                <td><span class="badge critical">Data Unavailable</span></td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+                
+                // Show error message on cards
+                bloodTypes.forEach(type => {
+                    const typeMap = {
+                        'A+': 'apos', 'A-': 'aneg', 'B+': 'bpos', 'B-': 'bneg',
+                        'AB+': 'abpos', 'AB-': 'abneg', 'O+': 'opos', 'O-': 'oneg'
+                    };
+                    
+                    const id = typeMap[type];
+                    const amountEl = document.getElementById(`${id}Amount`);
+                    const card = document.getElementById(`${id}Card`);
+                    
+                    if (amountEl) amountEl.textContent = '0';
+                    if (card) {
+                        const statusBadge = card.querySelector('.status-badge');
+                        if (statusBadge) {
+                            statusBadge.textContent = 'Error';
+                            statusBadge.className = 'status-badge critical';
+                        }
+                        
+                        const progressFill = card.querySelector('.progress-fill');
+                        if (progressFill) progressFill.style.width = '0%';
+                        
+                        card.classList.add('critical-border');
+                    }
+                });
+            }
+        }
+        
+        // Fetch and display recent donors
+        async function loadRecentDonors() {
+            const donorsTable = document.getElementById('recentDonorsTable');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/donors`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch recent donors');
+                }
+                
+                const donors = await response.json();
+                
+                // Clear table
+                donorsTable.innerHTML = '';
+                
+                if (donors.length === 0) {
+                    donorsTable.innerHTML = '<tr><td colspan="5" class="text-center">No donors registered yet</td></tr>';
+                    return;
+                }
+                
+                // Populate table with real data from the database
+                donors.slice(0, 5).forEach(donor => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${donor.Donor_ID || 'N/A'}</td>
+                        <td>${donor.Donor_Name || 'Unknown'}</td>
+                        <td>${donor.Blood_Type || 'Unknown'}</td>
+                        <td>${donor.Contact_Number || 'N/A'}</td>
+                        <td>${window.formatTimeSince(donor.created_at || donor.DOB) || 'N/A'}</td>
+                    `;
+                    donorsTable.appendChild(row);
+                });
+                
+            } catch (error) {
+                console.error('Error loading recent donors:', error);
+                donorsTable.innerHTML = '<tr><td colspan="5" class="text-center">Error loading donor data</td></tr>';
+            }
+        }
+        
+        // Notify function to show notifications
+        function showNotification(message, type = 'success') {
+            // Check if notification container exists, if not create it
+            let notifContainer = document.getElementById('notificationContainer');
+            if (!notifContainer) {
+                notifContainer = document.createElement('div');
+                notifContainer.id = 'notificationContainer';
+                notifContainer.style.position = 'fixed';
+                notifContainer.style.top = '20px';
+                notifContainer.style.right = '20px';
+                notifContainer.style.zIndex = '1000';
+                document.body.appendChild(notifContainer);
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.backgroundColor = type === 'success' ? '#4CAF50' : '#F44336';
+            notification.style.color = 'white';
+            notification.style.padding = '12px 20px';
+            notification.style.marginBottom = '10px';
+            notification.style.borderRadius = '4px';
+            notification.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+            notification.style.width = '300px';
+            notification.style.animation = 'slideIn 0.5s ease-out forwards';
+            notification.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>${message}</span>
+                    <button style="background: none; border: none; color: white; cursor: pointer; font-size: 16px;">×</button>
+                </div>
+            `;
+            
+            // Add close button functionality
+            const closeBtn = notification.querySelector('button');
+            closeBtn.addEventListener('click', () => {
+                notification.style.animation = 'slideOut 0.5s ease-in forwards';
+                setTimeout(() => {
+                    notifContainer.removeChild(notification);
+                }, 500);
+            });
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode === notifContainer) {
+                    notification.style.animation = 'slideOut 0.5s ease-in forwards';
+                    setTimeout(() => {
+                        if (notification.parentNode === notifContainer) {
+                            notifContainer.removeChild(notification);
+                        }
+                    }, 500);
+                }
+            }, 5000);
+            
+            // Add animation styles if not already added
+            if (!document.getElementById('notificationAnimations')) {
+                const styleSheet = document.createElement('style');
+                styleSheet.id = 'notificationAnimations';
+                styleSheet.innerHTML = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+        }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(styleSheet);
+            }
+            
+            // Add to container
+            notifContainer.appendChild(notification);
+        }
+        
+        // Edit and delete camp functions (placeholders)
+        function editCamp(campId) {
+            console.log('Edit camp', campId);
+            showNotification('Edit camp functionality not implemented yet');
+        }
+        
+        function deleteCamp(campId) {
+            if (confirm('Are you sure you want to delete this donation camp?')) {
+                fetch(`${API_BASE_URL}/camps/${campId}`, {
+                    method: 'DELETE'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        showNotification('Donation camp deleted successfully');
+                        loadCamps();
+            } else {
+                        throw new Error('Failed to delete camp');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Error deleting camp', 'error');
+                });
+            }
+        }
+    </script>
+</body>
+</html> 

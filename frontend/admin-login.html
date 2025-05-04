@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Blood Bank Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+        
+        .admin-login-container {
+            max-width: 450px;
+            margin: 4rem auto;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+        }
+
+        .admin-login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-login-header .icon {
+            font-size: 3rem;
+            color: #c62828;
+            margin-bottom: 1rem;
+        }
+
+        .admin-login-header h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .admin-login-header p {
+            color: #666;
+        }
+
+        .admin-login-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-login-form label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .admin-login-form input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .admin-login-form input:focus {
+            border-color: #c62828;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1);
+        }
+
+        .admin-login-form .btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .admin-login-form .btn.primary {
+            background: #c62828;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .admin-login-form .btn.primary:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-login-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #666;
+        }
+
+        .admin-login-footer a {
+            color: #c62828;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .admin-login-footer a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #c62828;
+            transform: scaleX(0);
+            transform-origin: bottom right;
+            transition: transform 0.3s ease;
+        }
+
+        .admin-login-footer a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        /* Input icon animation */
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #c62828;
+            transition: all 0.3s ease;
+        }
+        
+        .input-with-icon input {
+            padding-left: 45px;
+        }
+        
+        .input-with-icon input:focus + i {
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        /* Shake animation for invalid login */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            Blood Bank Management
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="donors.html">Donors</a></li>
+            <li><a href="inventory.html">Inventory</a></li>
+            <li><a href="requests.html">Blood Requests</a></li>
+            <li><a href="camps.html">Donation Camps</a></li>
+            <li><a href="admin-login.html" class="active admin-login-btn"><i class="fas fa-user-shield"></i> Admin</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <div class="admin-login-container">
+            <div class="admin-login-header">
+                <div class="icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h1>Admin Login</h1>
+                <p>Enter your credentials to access the admin dashboard</p>
+            </div>
+            <form id="adminLoginForm" class="admin-login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-with-icon">
+                        <input type="text" id="username" name="username" placeholder="Enter your admin username" required>
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div id="errorMessage" class="error-message">Invalid username or password</div>
+                </div>
+                <button type="submit" class="btn primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            <div class="admin-login-footer">
+                <p>Return to <a href="index.html">Home Page</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-phone"></i> +1 234 567 890</p>
+                <p><i class="fas fa-envelope"></i> info@bloodbank.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="donors.html">Donor Registration</a></li>
+                    <li><a href="requests.html">Blood Requests</a></li>
+                    <li><a href="camps.html">Donation Camps</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Blood Bank Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('adminLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Simple admin login check (for demo purpose)
+            // In a real app, this would call an API to validate credentials
+            if (username === 'admin' && password === 'admin123') {
+                // Simulate loading
+                const button = this.querySelector('button');
+                const originalText = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Logging in...';
+                
+                // Simulate API call delay
+                setTimeout(() => {
+                    localStorage.setItem('isAdminLoggedIn', 'true');
+                    window.location.href = 'admin-dashboard.html';
+                }, 1500);
+            } else {
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.style.display = 'block';
+                
+                // Shake animation for form
+                const form = document.getElementById('adminLoginForm');
+                form.classList.add('shake');
+                setTimeout(() => {
+                    form.classList.remove('shake');
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html> 

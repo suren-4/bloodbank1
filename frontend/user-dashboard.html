@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - Blood Bank Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .user-dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 72px);
+        }
+        
+        .user-sidebar {
+            background: #333;
+            color: white;
+            padding: 2rem 0;
+        }
+        
+        .user-sidebar .user-profile {
+            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .user-sidebar .user-profile .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #c62828;
+            color: white;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        
+        .user-sidebar .user-profile h3 {
+            margin: 0.5rem 0;
+            font-weight: 500;
+        }
+        
+        .user-sidebar .user-profile p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .user-sidebar .user-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .user-sidebar .user-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .user-sidebar .user-menu li a:hover,
+        .user-sidebar .user-menu li a.active {
+            background: rgba(198, 40, 40, 0.2);
+            color: white;
+        }
+        
+        .user-sidebar .user-menu li a i {
+            margin-right: 0.8rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .user-sidebar .user-menu .logout {
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+        }
+        
+        .user-sidebar .user-menu .logout a {
+            color: #ff9e9e;
+        }
+        
+        .user-sidebar .user-menu .logout a:hover {
+            background: rgba(255, 0, 0, 0.1);
+        }
+        
+        .user-content {
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        
+        .user-content .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .user-content .user-header h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        .user-info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-info-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .user-info-header .user-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(198, 40, 40, 0.1);
+            color: #c62828;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-right: 1.5rem;
+        }
+        
+        .user-info-header h2 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .user-info-header p {
+            margin: 0.25rem 0 0;
+            color: #666;
+        }
+        
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .user-info-item {
+            border-left: 3px solid #c62828;
+            padding-left: 1rem;
+        }
+        
+        .user-info-item h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .user-info-item p {
+            margin: 0;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .tab-container {
+            margin-top: 2rem;
+        }
+        
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tab-item {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-item.active {
+            color: #c62828;
+            border-bottom: 2px solid #c62828;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .auth-check {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+        }
+        
+        .auth-check i {
+            font-size: 3rem;
+            color: #c62828;
+            margin-bottom: 1rem;
+        }
+        
+        .auth-check p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .auth-check .btn {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth check overlay (hidden by default) -->
+    <div id="authCheck" class="auth-check" style="display: none;">
+        <i class="fas fa-lock"></i>
+        <h2>Access Denied</h2>
+        <p>You need to log in to access your dashboard</p>
+        <a href="user-login.html" class="btn">Go to Login</a>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">Blood Bank Management</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="donors.html">Donors</a></li>
+            <li><a href="inventory.html">Inventory</a></li>
+            <li><a href="requests.html">Blood Requests</a></li>
+            <li><a href="camps.html">Donation Camps</a></li>
+            <li><a href="admin-login.html">Admin</a></li>
+        </ul>
+    </nav>
+
+    <div class="user-dashboard">
+        <div class="user-sidebar">
+            <div class="user-profile">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 id="sidebarUsername">User Name</h3>
+                <p id="sidebarUserType">Donor</p>
+            </div>
+            <ul class="user-menu">
+                <li><a href="#" class="active" data-tab="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="#" data-tab="profile"><i class="fas fa-user"></i> My Profile</a></li>
+                <li><a href="#" data-tab="donations"><i class="fas fa-tint"></i> My Donations</a></li>
+                <li><a href="#" data-tab="requests"><i class="fas fa-clipboard-list"></i> My Requests</a></li>
+                <li class="logout"><a href="#" id="logoutButton"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+        <div class="user-content">
+            <div class="user-header">
+                <h1>User Dashboard</h1>
+                <div class="date">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="currentDate">Loading...</span>
+                </div>
+            </div>
+            
+            <!-- Dashboard Tab -->
+            <div id="dashboardTab" class="tab-content active">
+                <div class="user-info-card">
+                    <div class="user-info-header">
+                        <div class="user-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h2 id="userFullName">User Name</h2>
+                            <p id="userEmail">user@example.com</p>
+                        </div>
+                    </div>
+                    <div class="user-info-grid">
+                        <div class="user-info-item">
+                            <h3>Blood Type</h3>
+                            <p id="userBloodType">A+</p>
+                        </div>
+                        <div class="user-info-item">
+                            <h3>User Type</h3>
+                            <p id="userType">Donor</p>
+                        </div>
+                        <div class="user-info-item">
+                            <h3>Contact</h3>
+                            <p id="userContact">N/A</p>
+                        </div>
+                        <div class="user-info-item">
+                            <h3>Donor ID</h3>
+                            <p id="userDonorId">N/A</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tab-header">
+                        <div class="tab-item active" data-target="recentDonations">Recent Donations</div>
+                        <div class="tab-item" data-target="recentRequests">Recent Requests</div>
+                    </div>
+                    
+                    <div id="recentDonations" class="tab-content active">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Blood Type</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="donationsTable">
+                                    <!-- Donations will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div id="recentRequests" class="tab-content">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Blood Type</th>
+                                        <th>Units</th>
+                                        <th>Hospital</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="requestsTable">
+                                    <!-- Requests will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Profile Tab -->
+            <div id="profileTab" class="tab-content">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <div class="profile-avatar-image">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <div class="profile-badge" id="profileUserTypeBadge">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileHeaderName">User Name</h2>
+                            <p id="profileHeaderEmail">user@example.com</p>
+                            <div class="profile-blood-badge" id="profileBloodBadge">A+</div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-tabs">
+                        <div class="profile-tab active" data-profile-tab="personal">Personal Info</div>
+                      
+                    </div>
+
+                    <div class="profile-content-container">
+                        <!-- Personal Info Tab -->
+                        <div class="profile-content active" id="personal-tab">
+                            <form id="profileForm" class="profile-form">
+                                <div class="profile-form-row">
+                                    <div class="profile-form-group">
+                                        <label for="profileFullName">
+                                            <i class="fas fa-user"></i> Full Name
+                                        </label>
+                                        <input type="text" id="profileFullName" class="profile-input">
+                                    </div>
+                                    <div class="profile-form-group">
+                                        <label for="profileUsername">
+                                            <i class="fas fa-id-badge"></i> Username
+                                        </label>
+                                        <input type="text" id="profileUsername" class="profile-input" readonly>
+                                    </div>
+                        </div>
+                                
+                                <div class="profile-form-row">
+                                    <div class="profile-form-group">
+                                        <label for="profileEmail">
+                                            <i class="fas fa-envelope"></i> Email Address
+                                        </label>
+                                        <input type="email" id="profileEmail" class="profile-input" readonly>
+                        </div>
+                                    <div class="profile-form-group">
+                                        <label for="profileUserType">
+                                            <i class="fas fa-user-tag"></i> User Type
+                                        </label>
+                                        <input type="text" id="profileUserType" class="profile-input" readonly>
+                        </div>
+                        </div>
+                                
+                                <div class="profile-form-row">
+                                    <div class="profile-form-group">
+                                        <label for="profileContact">
+                                            <i class="fas fa-phone"></i> Contact Number
+                                        </label>
+                                        <input type="text" id="profileContact" class="profile-input">
+                        </div>
+                                    <div class="profile-form-group">
+                                        <label for="profileBloodType">
+                                            <i class="fas fa-tint"></i> Blood Type
+                                        </label>
+                                        <select id="profileBloodType" class="profile-input">
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                            </select>
+                        </div>
+                                </div>
+                                
+                                <div class="profile-form-row profile-form-action">
+                                    <button type="submit" class="profile-btn primary">
+                                        <i class="fas fa-save"></i> Update Profile
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Security Tab -->
+                        <div class="profile-content" id="security-tab">
+                            <form id="securityForm" class="profile-form">
+                                <div class="profile-form-row">
+                                    <div class="profile-form-group full-width">
+                                        <label for="currentPassword">
+                                            <i class="fas fa-lock"></i> Current Password
+                                        </label>
+                                        <input type="password" id="currentPassword" class="profile-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-form-row">
+                                    <div class="profile-form-group">
+                                        <label for="newPassword">
+                                            <i class="fas fa-key"></i> New Password
+                                        </label>
+                                        <input type="password" id="newPassword" class="profile-input">
+                                    </div>
+                                    <div class="profile-form-group">
+                                        <label for="confirmPassword">
+                                            <i class="fas fa-check-double"></i> Confirm Password
+                                        </label>
+                                        <input type="password" id="confirmPassword" class="profile-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="profile-form-row profile-form-action">
+                                    <button type="submit" class="profile-btn primary">
+                                        <i class="fas fa-lock"></i> Update Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Preferences Tab -->
+                        <div class="profile-content" id="preferences-tab">
+                            <form id="preferencesForm" class="profile-form">
+                                <div class="profile-preference-item">
+                                    <div class="preference-info">
+                                        <h3><i class="fas fa-bell"></i> Email Notifications</h3>
+                                        <p>Receive email notifications about donation camps and blood requests</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="emailNotifications" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="profile-preference-item">
+                                    <div class="preference-info">
+                                        <h3><i class="fas fa-calendar-alt"></i> Camp Reminders</h3>
+                                        <p>Receive reminders about upcoming donation camps in your area</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="campReminders" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="profile-preference-item">
+                                    <div class="preference-info">
+                                        <h3><i class="fas fa-shield-alt"></i> Privacy Settings</h3>
+                                        <p>Make your donor profile visible to hospitals and blood banks</p>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" id="privacySettings">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                                
+                                <div class="profile-form-row profile-form-action">
+                                    <button type="submit" class="profile-btn primary">
+                                        <i class="fas fa-save"></i> Save Preferences
+                                    </button>
+                                </div>
+                    </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Donations Tab -->
+            <div id="donationsTab" class="tab-content">
+                <div class="user-info-card">
+                    <div class="user-info-header">
+                        <div class="user-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div>
+                            <h2>My Donations</h2>
+                            <p>History of your blood donations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Blood Type</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allDonationsTable">
+                                <!-- All donations will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Requests Tab -->
+            <div id="requestsTab" class="tab-content">
+                <div class="user-info-card">
+                    <div class="user-info-header">
+                        <div class="user-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h2>My Requests</h2>
+                            <p>History of your blood requests</p>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Blood Type</th>
+                                    <th>Units</th>
+                                    <th>Hospital</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allRequestsTable">
+                                <!-- All requests will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // Authentication check
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            // If no token or user, show auth check overlay
+            if (!token || !user) {
+                document.getElementById('authCheck').style.display = 'flex';
+                return;
+            }
+            
+            // Set current date
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            
+            // Load user data
+            loadUserData();
+            
+            // Load user donations and requests
+            loadUserDonations();
+            loadUserRequests();
+            
+            // Setup tab navigation
+            setupTabs();
+            
+            // Setup logout button
+            document.getElementById('logoutButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'index.html';
+            });
+        });
+        
+        // Load user data
+        async function loadUserData() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (!token || !user) return;
+            
+            try {
+                // Update sidebar
+                document.getElementById('sidebarUsername').textContent = user.username;
+                document.getElementById('sidebarUserType').textContent = user.userType;
+                
+                // Update dashboard
+                document.getElementById('userFullName').textContent = user.fullName;
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userType').textContent = user.userType;
+                
+                // Fetch user profile from API
+                const response = await fetch(`${API_BASE_URL}/users/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const profileData = await response.json();
+                    
+                    // Update dashboard
+                    document.getElementById('userBloodType').textContent = profileData.bloodType || 'N/A';
+                    document.getElementById('userContact').textContent = profileData.contactNumber || 'N/A';
+                    document.getElementById('userDonorId').textContent = profileData.donorId || 'N/A';
+                    
+                    // Update profile form
+                    document.getElementById('profileFullName').value = profileData.fullName;
+                    document.getElementById('profileUsername').value = profileData.username;
+                    document.getElementById('profileEmail').value = profileData.email;
+                    document.getElementById('profileUserType').value = profileData.userType;
+                    document.getElementById('profileContact').value = profileData.contactNumber || '';
+                    document.getElementById('profileBloodType').value = profileData.bloodType || '';
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+        
+        // Load user donations
+        async function loadUserDonations() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/donations`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const donations = await response.json();
+                    
+                    // Update donations tables
+                    const donationsTable = document.getElementById('donationsTable');
+                    const allDonationsTable = document.getElementById('allDonationsTable');
+                    
+                    if (donations.length === 0) {
+                        const emptyRow = `<tr><td colspan="2" class="text-center">No donations found</td></tr>`;
+                        donationsTable.innerHTML = emptyRow;
+                        allDonationsTable.innerHTML = emptyRow;
+                        return;
+                    }
+                    
+                    const donationsHTML = donations.map(donation => `
+                        <tr>
+                            <td>${donation.Blood_Type}</td>
+                            <td>${formatDate(donation.Donation_Date)}</td>
+                        </tr>
+                    `).join('');
+                    
+                    donationsTable.innerHTML = donationsHTML;
+                    allDonationsTable.innerHTML = donationsHTML;
+                }
+            } catch (error) {
+                console.error('Error loading donations:', error);
+                
+                // Show error message
+                const errorRow = `<tr><td colspan="2" class="text-center">Error loading donations</td></tr>`;
+                document.getElementById('donationsTable').innerHTML = errorRow;
+                document.getElementById('allDonationsTable').innerHTML = errorRow;
+            }
+        }
+        
+        // Load user requests
+        async function loadUserRequests() {
+            const token = localStorage.getItem('token');
+            
+            if (!token) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/requests`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const requests = await response.json();
+                    
+                    // Update requests tables
+                    const requestsTable = document.getElementById('requestsTable');
+                    const allRequestsTable = document.getElementById('allRequestsTable');
+                    
+                    if (requests.length === 0) {
+                        const emptyRow = `<tr><td colspan="4" class="text-center">No requests found</td></tr>`;
+                        requestsTable.innerHTML = emptyRow;
+                        allRequestsTable.innerHTML = emptyRow;
+                        return;
+                    }
+                    
+                    const requestsHTML = requests.map(request => {
+                        // Determine badge class based on status
+                        let badgeClass = 'info';
+                        if (request.status && request.status.toLowerCase().includes('approved')) badgeClass = 'success';
+                        if (request.status && request.status.toLowerCase().includes('pending')) badgeClass = 'warning';
+                        if (request.status && request.status.toLowerCase().includes('rejected')) badgeClass = 'danger';
+                        
+                        return `
+                            <tr>
+                                <td>${request.Blood_Type}</td>
+                                <td>${request.Units}</td>
+                                <td>${request.Hospital_Name}</td>
+                                <td>${formatDate(request.created_at)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                    
+                    requestsTable.innerHTML = requestsHTML;
+                    allRequestsTable.innerHTML = requestsHTML;
+                }
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                
+                // Show error message
+                const errorRow = `<tr><td colspan="4" class="text-center">Error loading requests</td></tr>`;
+                document.getElementById('requestsTable').innerHTML = errorRow;
+                document.getElementById('allRequestsTable').innerHTML = errorRow;
+            }
+        }
+        
+        // Setup tabs navigation
+        function setupTabs() {
+            // Main tabs
+            document.querySelectorAll('.user-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.user-menu a').forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all tabs
+                    document.querySelectorAll('.user-content > .tab-content').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    
+                    // Show selected tab
+                    const tabId = this.getAttribute('data-tab') + 'Tab';
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Inner tabs
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    document.querySelectorAll('.tab-item').forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Hide all tab content
+                    document.querySelectorAll('.tab-container > .tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Show selected tab content
+                    const tabId = this.getAttribute('data-target');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+    </script>
+    <script src="auth-redirect.js"></script>
+</body>
+</html> 

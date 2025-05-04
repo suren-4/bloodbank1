@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Camps - Blood Bank Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Camps page specific styles */
+        .camps-hero {
+            background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 0 0 2rem 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .camps-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.2;
+        }
+        
+        .camps-hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .camps-hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .camps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .camp-card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border-top: 5px solid #c62828;
+        }
+        
+        .camp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .camp-card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            background: #FAFAFA;
+        }
+        
+        .camp-card-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .camp-card-header i {
+            color: #c62828;
+        }
+        
+        .camp-card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .camp-info {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .camp-info i {
+            width: 20px;
+            color: #c62828;
+        }
+        
+        .camp-details {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .camp-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+        
+        .camp-status.upcoming {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196F3;
+        }
+        
+        .camp-status.soon {
+            background: rgba(255, 152, 0, 0.1);
+            color: #FF9800;
+        }
+        
+        .camp-status.completed {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4CAF50;
+        }
+        
+        .camp-action {
+            margin-top: 1rem;
+        }
+        
+        .btn-volunteer {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #c62828 0%, #b71c1c 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-volunteer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(198, 40, 40, 0.3);
+        }
+        
+        .btn-volunteer:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .camps-section {
+            padding: 3rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+        
+        .section-title h2 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        
+        .section-title h2::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 3px;
+            background: #c62828;
+            margin: 0.5rem auto 0;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .camp-table {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .camp-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .camp-table th {
+            background: #f5f5f5;
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            white-space: nowrap;
+        }
+        
+        .camp-table td {
+            padding: 1.2rem 1.5rem;
+            border-top: 1px solid #f0f0f0;
+            color: #666;
+        }
+        
+        .camp-table tbody tr:hover {
+            background: #fafafa;
+        }
+        
+        .empty-camps {
+            text-align: center;
+            padding: 3rem;
+            color: #888;
+            font-style: italic;
+            background: #f9f9f9;
+            border-radius: 1rem;
+        }
+        
+        .empty-camps i {
+            font-size: 3rem;
+            color: #ddd;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .camps-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .camps-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .camps-hero p {
+                font-size: 1rem;
+            }
+            
+            .camp-table {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            Blood Bank Management
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="donors.html">Donors</a></li>
+            <li><a href="inventory.html">Inventory</a></li>
+            <li><a href="requests.html">Blood Requests</a></li>
+            <li><a href="camps.html" class="active">Donation Camps</a></li>
+            <li><a href="user-login.html" id="userAuthLink">Login</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="camps-hero">
+            <h1><i class="fas fa-calendar-alt"></i> Blood Donation Camps</h1>
+            <p>Join our upcoming blood donation camps and help save lives. Your one donation can save up to three lives. Check the schedule below and be a hero!</p>
+        </section>
+
+        <div class="container">
+            <section class="camps-section">
+                <div class="section-title">
+                    <h2>Upcoming Donation Camps</h2>
+                    <p>Scheduled events where you can donate blood and make a difference</p>
+                </div>
+                
+                <div class="camps-grid" id="upcomingCamps">
+                    <!-- Camp cards will be dynamically added here -->
+                    <div class="camp-card">
+                        <div class="camp-card-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> City Hospital</h3>
+                        </div>
+                        <div class="camp-card-body">
+                            <div class="camp-info">
+                                <i class="fas fa-calendar"></i>
+                                <span>July 25, 2024</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-clock"></i>
+                                <span>9:00 AM - 5:00 PM</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-users"></i>
+                                <span>Expected Donors: 50</span>
+                            </div>
+                            <div class="camp-details">
+                                <div class="camp-status upcoming">Upcoming</div>
+                                <p>Join us for a blood donation drive at City Hospital. Refreshments will be provided to all donors.</p>
+                                <div class="camp-action">
+                                    <button class="btn-volunteer">
+                                        <i class="fas fa-hand-holding-heart"></i> Volunteer to Donate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="camp-card">
+                        <div class="camp-card-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> University Campus</h3>
+                        </div>
+                        <div class="camp-card-body">
+                            <div class="camp-info">
+                                <i class="fas fa-calendar"></i>
+                                <span>August 5, 2024</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-clock"></i>
+                                <span>10:00 AM - 4:00 PM</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-users"></i>
+                                <span>Expected Donors: 75</span>
+                            </div>
+                            <div class="camp-details">
+                                <div class="camp-status upcoming">Upcoming</div>
+                                <p>We're organizing a blood donation camp at the University Campus. All students and faculty members are encouraged to participate.</p>
+                                <div class="camp-action">
+                                    <button class="btn-volunteer">
+                                        <i class="fas fa-hand-holding-heart"></i> Volunteer to Donate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="camp-card">
+                        <div class="camp-card-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> Community Center</h3>
+                        </div>
+                        <div class="camp-card-body">
+                            <div class="camp-info">
+                                <i class="fas fa-calendar"></i>
+                                <span>August 15, 2024</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-clock"></i>
+                                <span>8:00 AM - 6:00 PM</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-users"></i>
+                                <span>Expected Donors: 100</span>
+                            </div>
+                            <div class="camp-details">
+                                <div class="camp-status upcoming">Upcoming</div>
+                                <p>Special blood donation drive at the Community Center as part of our monthly campaign. Free health checkups for all donors.</p>
+                                <div class="camp-action">
+                                    <button class="btn-volunteer">
+                                        <i class="fas fa-hand-holding-heart"></i> Volunteer to Donate
+                                    </button>
+                                </div>
+                            </div>
+                </div>
+                </div>
+                </div>
+            </section>
+
+            <section class="camps-section">
+                <div class="section-title">
+                    <h2>Camp Schedule</h2>
+                    <p>Complete schedule of all upcoming and past donation camps</p>
+                </div>
+
+                <div class="camp-table">
+                <table id="campsTable">
+                    <thead>
+                        <tr>
+                            <th>Camp ID</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Expected Donors</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                        <tbody id="campsTableBody">
+                            <tr>
+                                <td>1</td>
+                                <td>City Hospital</td>
+                                <td>July 25, 2024</td>
+                                <td>9:00 AM - 5:00 PM</td>
+                                <td>50</td>
+                                <td><span class="badge processing">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>University Campus</td>
+                                <td>August 5, 2024</td>
+                                <td>10:00 AM - 4:00 PM</td>
+                                <td>75</td>
+                                <td><span class="badge processing">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Community Center</td>
+                                <td>August 15, 2024</td>
+                                <td>8:00 AM - 6:00 PM</td>
+                                <td>100</td>
+                                <td><span class="badge processing">Upcoming</span></td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Central Park</td>
+                                <td>July 10, 2024</td>
+                                <td>9:00 AM - 3:00 PM</td>
+                                <td>40</td>
+                                <td><span class="badge completed">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Downtown Medical Center</td>
+                                <td>July 5, 2024</td>
+                                <td>10:00 AM - 4:00 PM</td>
+                                <td>60</td>
+                                <td><span class="badge completed">Completed</span></td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-phone"></i> +1 234 567 890</p>
+                <p><i class="fas fa-envelope"></i> info@bloodbank.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="donors.html">Donor Registration</a></li>
+                    <li><a href="requests.html">Blood Requests</a></li>
+                    <li><a href="camps.html">Donation Camps</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+        <p>&copy; 2024 Blood Bank Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // API Base URL
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            const userAuthLink = document.getElementById('userAuthLink');
+            
+            if (token && user) {
+                // User is logged in
+                userAuthLink.textContent = 'Dashboard';
+                userAuthLink.href = 'user-dashboard.html';
+            }
+            
+            // Load camps data
+            loadCamps();
+        });
+        
+        // Load donation camps
+        async function loadCamps() {
+            const upcomingCamps = document.getElementById('upcomingCamps');
+            const campsTableBody = document.getElementById('campsTableBody');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/camps`);
+                if (!response.ok) throw new Error('Failed to fetch donation camps');
+                
+                const camps = await response.json();
+                
+                // Clear existing content
+                upcomingCamps.innerHTML = '';
+                campsTableBody.innerHTML = '';
+                
+                if (camps.length === 0) {
+                    upcomingCamps.innerHTML = `
+                        <div class="empty-camps">
+                            <i class="fas fa-calendar-times"></i>
+                            <h3>No Upcoming Camps</h3>
+                            <p>There are no donation camps scheduled at the moment. Please check back later.</p>
+                        </div>
+                    `;
+                    campsTableBody.innerHTML = '<tr><td colspan="6" class="text-center">No donation camps scheduled</td></tr>';
+                    return;
+                }
+                
+                // Sort camps by date (upcoming first)
+                camps.sort((a, b) => new Date(a.date) - new Date(b.date));
+                
+                // Filter upcoming camps (today and future)
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const upcomingCampsList = camps.filter(camp => {
+                    const campDate = new Date(camp.date);
+                    campDate.setHours(0, 0, 0, 0);
+                    return campDate >= today;
+                });
+                
+                // Display upcoming camps as cards (limit to 3)
+                upcomingCampsList.slice(0, 3).forEach(camp => {
+                    // Format date
+                    const campDate = new Date(camp.date);
+                    const formattedDate = campDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                    
+                    // Determine status
+                    let status = 'Upcoming';
+                    let statusClass = 'upcoming';
+                    
+                    if (Math.abs(campDate - today) / (1000 * 60 * 60 * 24) < 3) {
+                        status = 'Coming Soon';
+                        statusClass = 'soon';
+                    }
+                    
+                    const campCard = document.createElement('div');
+                    campCard.className = 'camp-card';
+                    campCard.innerHTML = `
+                        <div class="camp-card-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> ${camp.location}</h3>
+                        </div>
+                        <div class="camp-card-body">
+                            <div class="camp-info">
+                                <i class="fas fa-calendar"></i>
+                                <span>${formattedDate}</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-clock"></i>
+                                <span>${camp.time}</span>
+                            </div>
+                            <div class="camp-info">
+                                <i class="fas fa-users"></i>
+                                <span>Expected Donors: ${camp.capacity}</span>
+                            </div>
+                            <div class="camp-details">
+                                <div class="camp-status ${statusClass}">${status}</div>
+                                <p>${camp.description || 'Join us for this blood donation camp and help save lives!'}</p>
+                                <div class="camp-action">
+                                    <button class="btn-volunteer">
+                                        <i class="fas fa-hand-holding-heart"></i> Volunteer to Donate
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    upcomingCamps.appendChild(campCard);
+                });
+                
+                // If no upcoming camps
+                if (upcomingCampsList.length === 0) {
+                    upcomingCamps.innerHTML = `
+                        <div class="empty-camps">
+                            <i class="fas fa-calendar-times"></i>
+                            <h3>No Upcoming Camps</h3>
+                            <p>There are no donation camps scheduled at the moment. Please check back later.</p>
+                        </div>
+                    `;
+                }
+                
+                // Display all camps in table
+                camps.forEach(camp => {
+                    // Format date
+                    const campDate = new Date(camp.date);
+                    const formattedDate = campDate.toLocaleDateString();
+                    
+                    // Determine status
+                    const campDay = new Date(camp.date);
+                    campDay.setHours(0, 0, 0, 0);
+                    
+                    let status = 'Upcoming';
+                    let badgeClass = 'processing';
+                    
+                    if (campDay < today) {
+                        status = 'Completed';
+                        badgeClass = 'completed';
+                    } else if (Math.abs(campDay - today) / (1000 * 60 * 60 * 24) < 3) {
+                        status = 'Coming Soon';
+                        badgeClass = 'urgent';
+                    }
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${camp.id}</td>
+                        <td>${camp.location}</td>
+                        <td>${formattedDate}</td>
+                        <td>${camp.time}</td>
+                        <td>${camp.capacity}</td>
+                        <td><span class="badge ${badgeClass}">${status}</span></td>
+                    `;
+                    campsTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading camps:', error);
+                upcomingCamps.innerHTML = `
+                    <div class="empty-camps">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Error Loading Camps</h3>
+                        <p>We encountered an error while loading the donation camps. Please try again later.</p>
+                    </div>
+                `;
+                campsTableBody.innerHTML = '<tr><td colspan="6" class="text-center">Error loading donation camps</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html> 

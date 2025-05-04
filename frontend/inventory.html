@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Inventory - Blood Bank Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-heartbeat"></i>
+            Blood Bank Management
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="donors.html">Donors</a></li>
+            <li><a href="inventory.html" class="active">Inventory</a></li>
+            <li><a href="requests.html">Blood Requests</a></li>
+            <li><a href="camps.html">Donation Camps</a></li>
+            <li><a href="admin-login.html">Admin</a></li>
+            <li><a href="user-login.html" id="userAuthLink">Login</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="inventory-hero">
+            <div class="inventory-hero-content">
+                <h1><i class="fas fa-vial"></i> Blood Inventory</h1>
+                <p>Real-time monitoring of blood stock levels and availability status</p>
+            </div>
+            <div class="inventory-summary">
+                <div class="inventory-summary-item">
+                    <span id="totalUnits">0</span>
+                    <p>Total Units</p>
+                </div>
+                <div class="inventory-summary-item">
+                    <span id="criticalTypes">0</span>
+                    <p>Critical Types</p>
+                </div>
+            </div>
+        </section>
+        
+        <div class="container">
+            <div class="inventory-dashboard">
+                <div class="inventory-dashboard-header">
+                    <h2><i class="fas fa-tint"></i> Blood Stock Overview</h2>
+                    <div class="inventory-actions">
+                        <button id="refreshInventory" class="btn refresh-btn">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <div class="inventory-legend">
+                            <span class="legend-item"><i class="fas fa-circle high"></i> Sufficient</span>
+                            <span class="legend-item"><i class="fas fa-circle medium"></i> Low</span>
+                            <span class="legend-item"><i class="fas fa-circle low"></i> Critical</span>
+                        </div>
+                    </div>
+                </div>
+                
+                    <div class="inventory-grid" id="inventoryGrid">
+                    <div class="inventory-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading inventory data...</p>
+                    </div>
+                </div>
+                
+                <div id="inventoryCta"></div>
+            </div>
+            
+            <div class="inventory-insights">
+                <h2><i class="fas fa-chart-pie"></i> Inventory Insights</h2>
+                <div class="insight-cards">
+                    <div class="insight-card">
+                        <div class="insight-icon"><i class="fas fa-fire-alt"></i></div>
+                        <div class="insight-content">
+                            <h3>Highest Demand</h3>
+                            <p>O+ blood type has the highest demand with 70% of requests</p>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon"><i class="fas fa-hourglass-half"></i></div>
+                        <div class="insight-content">
+                            <h3>Shelf Life</h3>
+                            <p>Red blood cells can be stored for up to 42 days</p>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon"><i class="fas fa-users"></i></div>
+                        <div class="insight-content">
+                            <h3>Universal Donor</h3>
+                            <p>O- is the universal donor and can be given to any blood type</p>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon"><i class="fas fa-user-plus"></i></div>
+                        <div class="insight-content">
+                            <h3>Universal Recipient</h3>
+                            <p>AB+ is the universal recipient and can receive any blood type</p>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><i class="fas fa-phone"></i> +1 234 567 890</p>
+                <p><i class="fas fa-envelope"></i> info@bloodbank.com</p>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="donors.html">Donor Registration</a></li>
+                    <li><a href="requests.html">Blood Requests</a></li>
+                    <li><a href="camps.html">Donation Camps</a></li>
+                    <li><a href="#">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+        <p>&copy; 2024 Blood Bank Management System. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Check authentication
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user'));
+            const userAuthLink = document.getElementById('userAuthLink');
+            
+            if (token && user) {
+                // User is logged in
+                userAuthLink.textContent = 'Dashboard';
+                userAuthLink.href = 'user-dashboard.html';
+            } else {
+                // User is not logged in, redirect to login page
+                alert('Please log in to access inventory features');
+                window.location.href = 'user-login.html';
+            }
+            
+            // Load inventory
+            loadInventory();
+            
+            // Add refresh button event listener
+            document.getElementById('refreshInventory').addEventListener('click', function() {
+                this.classList.add('refreshing');
+                loadInventory(true);
+                setTimeout(() => {
+                    this.classList.remove('refreshing');
+                }, 1000);
+            });
+        });
+
+        // API Base URL
+        const API_BASE_URL = 'http://localhost:3000/api';
+
+        // Blood Type Icons and Colors
+        const bloodTypeInfo = {
+            'A+': { icon: 'hand-holding-droplet', color: '#e53935' },
+            'A-': { icon: 'hand-holding-water', color: '#e57373' },
+            'B+': { icon: 'droplet', color: '#1e88e5' },
+            'B-': { icon: 'tint-slash', color: '#64b5f6' },
+            'AB+': { icon: 'vial', color: '#8e24aa' },
+            'AB-': { icon: 'prescription-bottle', color: '#ba68c8' },
+            'O+': { icon: 'heart', color: '#43a047' },
+            'O-': { icon: 'heart-pulse', color: '#81c784' }
+        };
+
+        // Load inventory data
+        function loadInventory(isRefresh = false) {
+            const inventoryGrid = document.getElementById('inventoryGrid');
+            const inventoryCta = document.getElementById('inventoryCta');
+            
+            // Show loading animation
+            if (!isRefresh) {
+                inventoryGrid.innerHTML = `
+                    <div class="inventory-loading">
+                        <div class="loading-spinner"></div>
+                        <p>Loading inventory data...</p>
+                    </div>
+                `;
+            }
+            
+            fetch(`${API_BASE_URL}/inventory`)
+                .then(response => response.json())
+                .then(data => {
+                    // Clear loading and CTA
+                    inventoryGrid.innerHTML = '';
+                    inventoryCta.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        inventoryGrid.innerHTML = `
+                            <div class="empty-inventory">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p>No inventory data available</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Update summary statistics
+                    updateInventorySummary(data);
+                    
+                    // Create blood stock cards with enhanced visualization and animation
+                    data.forEach((item, index) => {
+                        let levelClass = 'high';
+                        let statusText = 'Sufficient Stock';
+                        let statusIcon = 'check-circle';
+                        let stockMessage = '';
+                        let priority = 3;
+                        
+                        // Determine status based on quantity
+                        if (item.Quantity < 5) {
+                            levelClass = 'low';
+                            statusText = 'Critical Shortage';
+                            statusIcon = 'exclamation-circle';
+                            stockMessage = '<div class="stock-message"><i class="fas fa-exclamation-triangle"></i> Urgent Donation Needed</div>';
+                            priority = 1;
+                        } else if (item.Quantity < 10) {
+                            levelClass = 'medium';
+                            statusText = 'Low Stock';
+                            statusIcon = 'exclamation-triangle';
+                            stockMessage = '<div class="stock-message"><i class="fas fa-info-circle"></i> Donation Recommended</div>';
+                            priority = 2;
+                        }
+                        
+                        // Get blood type specific styling
+                        const typeInfo = bloodTypeInfo[item.Blood_Type] || { icon: 'tint', color: '#c62828' };
+                        
+                        // Calculate fill percentage for the progress bar (max at 30 units)
+                        const fillPercent = Math.min(Math.round((item.Quantity / 30) * 100), 100);
+                        
+                        // Build the blood stock card
+                        const bloodCard = document.createElement('div');
+                        bloodCard.className = `blood-stock-card ${levelClass}`;
+                        bloodCard.style.animationDelay = `${0.1 + (index * 0.1)}s`;
+                        bloodCard.style.order = priority; // Use order property to prioritize critical types
+                        bloodCard.innerHTML = `
+                            <div class="card-border ${levelClass}">
+                                <div class="blood-type-badge" style="background-color: ${typeInfo.color}">
+                                    ${item.Blood_Type}
+                                </div>
+                                <i class="fas fa-${typeInfo.icon}" style="color: ${typeInfo.color}"></i>
+                            </div>
+                            <div class="blood-stock-body">
+                                <div class="stock-quantity">${item.Quantity}</div>
+                                <div class="stock-label">Available Units</div>
+                                <div class="stock-progress-wrapper">
+                                    <div class="stock-progress-container">
+                                        <div class="stock-progress-bar ${levelClass}" style="width: ${fillPercent}%"></div>
+                                    </div>
+                                    <div class="stock-progress-labels">
+                                        <span>0</span>
+                                        <span>30+</span>
+                                    </div>
+                                </div>
+                                <div class="stock-status ${levelClass}">
+                                    <i class="fas fa-${statusIcon}"></i> ${statusText}
+                                </div>
+                                ${stockMessage}
+                                <a href="donors.html" class="donate-btn">
+                                    <i class="fas fa-heart"></i> Donate
+                                </a>
+                            </div>
+                        `;
+                        
+                        inventoryGrid.appendChild(bloodCard);
+                    });
+                    
+                    // Add CTA section if any blood type is low
+                    const hasLowInventory = data.some(item => item.Quantity < 10);
+                    if (hasLowInventory) {
+                        const criticalTypes = data.filter(item => item.Quantity < 5)
+                            .map(item => item.Blood_Type)
+                            .join(', ');
+                            
+                        const ctaMessage = criticalTypes ? 
+                            `We're critically low on ${criticalTypes} blood types. Your donation can save lives!` :
+                            `We're currently low on some blood types. Your donation can save lives!`;
+                            
+                        inventoryCta.innerHTML = `
+                            <div class="inventory-cta">
+                                <div class="inventory-cta-content">
+                                    <div class="cta-icon-container">
+                                        <i class="fas fa-heartbeat"></i>
+                                    </div>
+                                    <div class="cta-text">
+                                        <h3>Blood Donation Needed</h3>
+                                        <p>${ctaMessage}</p>
+                                    </div>
+                                    <a href="donors.html" class="btn primary">
+                                        <i class="fas fa-hand-holding-heart"></i> Donate Now
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading inventory:', error);
+                    inventoryGrid.innerHTML = `
+                        <div class="error-message">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Error loading inventory data. Please try again later.</p>
+                            <button class="btn secondary" onclick="loadInventory()">
+                                <i class="fas fa-redo"></i> Retry
+                            </button>
+                        </div>
+                    `;
+                });
+        }
+        
+        // Update inventory summary statistics
+        function updateInventorySummary(data) {
+            const totalUnits = data.reduce((total, item) => total + item.Quantity, 0);
+            const criticalTypes = data.filter(item => item.Quantity < 5).length;
+            
+            document.getElementById('totalUnits').textContent = totalUnits;
+            document.getElementById('criticalTypes').textContent = criticalTypes;
+            
+            // Add visual indicator if any critical types
+            if (criticalTypes > 0) {
+                document.getElementById('criticalTypes').classList.add('critical-highlight');
+            } else {
+                document.getElementById('criticalTypes').classList.remove('critical-highlight');
+            }
+        }
+    </script>
+    <script src="auth-redirect.js"></script>
+</body>
+</html> 
